@@ -8,7 +8,7 @@
 
 class Solution {
   public:
-    long long minimumCost(std::vector<int> &nums, int k, int dist) {
+    long long minimumCostSlow(std::vector<int> &nums, int k, int dist) {
         std::multiset<int> heap;
         std::queue<std::multiset<int>::iterator> q;
         long long minCost = nums[0] + nums[1];
@@ -45,6 +45,43 @@ class Solution {
             }
             heap.erase(eject);
             q.pop();
+            minCost = std::min(minCost, curCost);
+        }
+        return minCost;
+    }
+
+    long long minimumCost(std::vector<int> &nums, int k, int dist) {
+        std::multiset<int> heap_low, heap_high;
+        long long minCost = nums[0] + nums[1];
+        for (auto i = nums.begin() + 2; i < nums.begin() + 2 + dist; ++i)
+            heap_low.insert(*i);
+        while (heap_low.size() > k - 2) {
+            auto max = std::prev(heap_low.end());
+            heap_high.insert(*max);
+            heap_low.erase(max);
+        }
+
+        for (auto i = heap_low.begin(); i != heap_low.end(); ++i) minCost += *i;
+        auto curCost = minCost;
+        for (auto i = nums.begin() + 2; i < nums.end() - k + 2; ++i) {
+            curCost += *i - *(i - 1);
+            if (i < nums.end() - dist) {
+                auto max = std::prev(heap_low.end());
+                if (*(i + dist) < *max) {
+                    heap_low.insert(*(i + dist));
+                    curCost += *(i + dist) - *max;
+                    heap_high.insert(*max);
+                    heap_low.erase(max);
+                } else heap_high.insert(*(i + dist));
+            }
+            if (heap_high.empty()) break;
+            auto max = std::prev(heap_low.end());
+            if (*i <= *max) {
+                curCost += *heap_high.begin() - *i;
+                heap_low.erase(heap_low.find(*i));
+                heap_low.insert(*heap_high.begin());
+                heap_high.erase(heap_high.begin());
+            } else heap_high.erase(heap_high.find(*i));
             minCost = std::min(minCost, curCost);
         }
         return minCost;

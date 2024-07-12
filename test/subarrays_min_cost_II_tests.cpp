@@ -37,6 +37,26 @@ TEST_F(SubArraysTest, YetAnotherFailingExample) {
     ASSERT_EQ(s.minimumCost(v, 6, 5), 28);
 }
 
+TEST_F(SubArraysTest, YetAnotherYetAnotherFailingExample) {
+    std::vector<int> v(
+        {2,         2097152,  4194304, 1,         16,   65536,    512, 8388608,
+         536870912, 67108864, 524288,  268435456, 256,  16777216, 8,   1048576,
+         4,         16384,    262144,  1024,      64,   33554432, 32,  128,
+         134217728, 32768,    8192,    131072,    2048, 4096});
+    ASSERT_EQ(s.minimumCost(v, 15, 15), 1506542);
+}
+
+TEST_F(SubArraysTest, FOOBAR) {
+    std::vector<int> v({2, 6, 3, 5});
+    ASSERT_EQ(s.minimumCost(v, 3, 1), 10);
+}
+
+TEST_F(SubArraysTest, MEMFOOBAR) {
+    std::vector<int> v({24, 7, 20, 39, 1,  50, 27, 39, 18, 31,
+                        27, 6, 11, 4,  48, 47, 47, 5,  31, 26});
+    ASSERT_EQ(s.minimumCost(v, 13, 17), 212);
+}
+
 TEST_F(SubArraysTest, TooLong) {
     std::vector<int> v(
         {1, 100, 1000, 10000, 1, 100, 1000, 10000, 1, 100, 1000, 10000,
