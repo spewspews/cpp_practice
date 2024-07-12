@@ -60,7 +60,6 @@ class Solution {
             heap_high.insert(*max);
             heap_low.erase(max);
         }
-
         for (auto i = heap_low.begin(); i != heap_low.end(); ++i) minCost += *i;
         auto curCost = minCost;
         for (auto i = nums.begin() + 2; i < nums.end() - k + 2; ++i) {
