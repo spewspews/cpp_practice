@@ -79,8 +79,8 @@ class Solution {
                 // we only bump a number out if we absolutely have
                 // to.
                 if (*(i + dist) < *max) {
-                    heap_low.insert(*(i + dist));
                     curCost += *(i + dist) - *max;
+                    heap_low.insert(*(i + dist));
                     heap_high.insert(*max);
                     heap_low.erase(max);
                 } else heap_high.insert(*(i + dist));
@@ -90,6 +90,9 @@ class Solution {
             // In fact it is now a mandatory choice since it must be the
             // start of the second interval. Again we have to know which
             // heap to remove it from.
+            // N.B. If we chose strictly less comparison, it is possible
+            // that there is no value equal to `max` in the higher heap.
+            // If it is anywhere, we are guaranteed it is here.
             if (*i <= *max) {
                 curCost += *heap_high.begin() - *i;
                 heap_low.erase(heap_low.find(*i));
