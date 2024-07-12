@@ -73,7 +73,6 @@ class Solution {
                     heap_low.erase(max);
                 } else heap_high.insert(*(i + dist));
             }
-            if (heap_high.empty()) break;
             auto max = std::prev(heap_low.end());
             if (*i <= *max) {
                 curCost += *heap_high.begin() - *i;
