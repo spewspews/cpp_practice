@@ -55,7 +55,7 @@ class Solution {
         long long minCost = nums[0] + nums[1];
         for (auto i = nums.begin() + 2; i < nums.begin() + 2 + dist; ++i)
             heap_low.insert(*i);
-        while (heap_low.size() > k - 2) {
+        while (int(heap_low.size()) > k - 2) {
             auto max = std::prev(heap_low.end());
             heap_high.insert(*max);
             heap_low.erase(max);
@@ -63,9 +63,21 @@ class Solution {
         for (auto i = heap_low.begin(); i != heap_low.end(); ++i) minCost += *i;
         auto curCost = minCost;
         for (auto i = nums.begin() + 2; i < nums.end() - k + 2; ++i) {
+            // We have just incremented `i` so we have to remove
+            // the previous selection for the second interval
+            // and add the new one.
             curCost += *i - *(i - 1);
             if (i < nums.end() - dist) {
                 auto max = std::prev(heap_low.end());
+                // `i+dist` is getting added as a possible choice
+                // but we have to know which heap to put it in.
+                // In case we put it in the lower heap, we have to
+                // readjust the size by bumping the largest element
+                // out to the higher heap. We adjust `curCost`
+                // accordingly.
+                // N.B. we choose strictly less comparison so that
+                // we only bump a number out if we absolutely have
+                // to.
                 if (*(i + dist) < *max) {
                     heap_low.insert(*(i + dist));
                     curCost += *(i + dist) - *max;
@@ -74,6 +86,10 @@ class Solution {
                 } else heap_high.insert(*(i + dist));
             }
             auto max = std::prev(heap_low.end());
+            // `i` is getting removed from the queues as a possible choice.
+            // In fact it is now a mandatory choice since it must be the
+            // start of the second interval. Again we have to know which
+            // heap to remove it from.
             if (*i <= *max) {
                 curCost += *heap_high.begin() - *i;
                 heap_low.erase(heap_low.find(*i));
