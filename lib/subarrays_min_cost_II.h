@@ -75,9 +75,9 @@ class Solution {
                 // readjust the size by bumping the largest element
                 // out to the higher heap. We adjust `curCost`
                 // accordingly.
-                // N.B. we choose strictly less comparison so that
-                // we only bump a number out if we absolutely have
-                // to.
+                // N.B. we choose strictly less comparison otherwise
+                // we would be bumping out `max` just to put back in
+                // the same value.
                 if (*(i + dist) < *max) {
                     curCost += *(i + dist) - *max;
                     heap_low.insert(*(i + dist));
@@ -90,9 +90,9 @@ class Solution {
             // In fact it is now a mandatory choice since it must be the
             // start of the second interval. Again we have to know which
             // heap to remove it from.
-            // N.B. If we chose strictly less comparison, it is possible
-            // that there is no value equal to `max` in the higher heap.
-            // If it is anywhere, we are guaranteed it is here.
+            // N.B. we choose leq comparison since we must remove it from
+            // somewhere and we cannot know if `max ∈ heap_high`, but
+            // of course we know it is in `heap_low`.
             if (*i <= *max) {
                 curCost += *heap_high.begin() - *i;
                 heap_low.erase(heap_low.find(*i));
