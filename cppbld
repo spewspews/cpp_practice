@@ -1,0 +1,13 @@
+#!/usr/bin/fish
+
+argparse d= s -- $argv
+or return
+
+set -f dir build
+if set -q _flag_d
+  set dir $_flag_d
+end
+
+while sleep 0.1
+  find . -name '*.cpp' -or -name '*.h' | entr -dps './cppbldit '$dir' $argv[1]'
+end

@@ -1,3 +1,9 @@
-file(GLOB LIB_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS *.cpp)
+file(GLOB LIB_FILES
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  CONFIGURE_DEPENDS
+  *.cpp)
 
-add_library(cpp_practice STATIC ${LIB_FILES})
+foreach(LIB_FILE ${LIB_FILES})
+  string(REGEX REPLACE "\.cpp" "" LIB ${LIB_FILE})
+  add_library(${LIB} ${LIB_FILE})
+endforeach()

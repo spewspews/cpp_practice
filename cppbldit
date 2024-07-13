@@ -1,0 +1,11 @@
+#!/usr/bin/fish
+
+set -f lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
+
+set -f tests $lib'_tests'
+
+if echo $argv[2] | grep tests
+  clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests && ./$tests
+else
+  clear && clang-format -i $argv[2] && cd $argv[1] && make $lib && cd test && make $tests && ./$tests
+end

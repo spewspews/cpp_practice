@@ -7,10 +7,8 @@ include(GoogleTest)
 
 foreach(TEST_FILE ${TEST_FILES})
   string(REGEX REPLACE "\.cpp" "" TEST ${TEST_FILE})
+  string(REGEX REPLACE "_tests" "" LIB ${TEST})
   add_executable(${TEST} ${TEST_FILE})
-  target_link_libraries(${TEST}
-    cpp_practice
-    GTest::gtest_main
-  )
+  target_link_libraries(${TEST} ${LIB} GTest::gtest_main)
   gtest_discover_tests(${TEST})
 endforeach()
