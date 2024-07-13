@@ -10,9 +10,16 @@ class Dir {
   public:
     int value;
     std::map<std::string, Dir *, std::less<>> child;
+
     Dir(int value) : value(value), child() {}
     ~Dir() {
         for (auto c : child) delete c.second;
+    }
+
+    bool addChild(std::string_view s, int v) {
+        if (child.find(s) != child.end()) return false;
+        child.emplace(s, new Dir(v));
+        return true;
     }
 };
 
@@ -41,11 +48,9 @@ class FileSystem {
         auto dir =
             idx == 0 ? &root
                      : find(std::string_view(path.begin(), path.begin() + idx));
-        auto base = std::string_view(path.begin() + idx + 1, path.end());
-        if (dir == nullptr || dir->child.find(base) != dir->child.end())
-            return false;
-        dir->child.emplace(base, new Dir(value));
-        return true;
+        if (dir == nullptr) return false;
+        return dir->addChild(
+            std::string_view(path.begin() + idx + 1, path.end()), value);
     }
 
     int get(std::string path) {
