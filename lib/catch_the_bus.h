@@ -35,7 +35,7 @@ class Solution {
                 if (++np == capacity) break;
             }
             if (np < capacity && prev < b) slot = b;
-            latestTime = std::max(latestTime, slot);
+            latestTime = slot;
         }
         return latestTime;
     }

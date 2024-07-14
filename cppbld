@@ -1,13 +1,20 @@
 #!/usr/bin/fish
 
-argparse d= s -- $argv
+argparse d/dir= g/go -- $argv
 or return
 
-set -f dir build
-if set -q _flag_d
-  set dir $_flag_d
+set -f args
+
+if set -q _flag_go
+  set args $args -g
+end
+
+if set -q _flag_dir
+  set args $args $_flag_d
+else
+  set args $args build
 end
 
 while sleep 0.1
-  find . -name '*.cpp' -or -name '*.h' | entr -dps './cppbldit '$dir' $argv[1]'
+  find . -name '*.cpp' -or -name '*.h' | entr -dps './cppbldit '"$args"' $argv[1]'
 end

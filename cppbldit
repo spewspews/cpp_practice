@@ -1,11 +1,19 @@
 #!/usr/bin/fish
 
-set -f lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
+argparse g/go -- $argv
+or return
 
-set -f tests $lib'_tests'
+set -f lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
+set -f tests_file $lib'_tests'
+set -f test_fixture (nawk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
+
+set -f ctest_args -R $test_fixture --output-on-failure
+if not set -q _flag_go
+  set ctest_args $ctest_args --stop-on-failure
+end
 
 if echo $argv[2] | grep tests
-  clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests && ./$tests
+  clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
 else
-  clear && clang-format -i $argv[2] && cd $argv[1] && make $lib && cd test && make $tests && ./$tests
+  clear && clang-format -i $argv[2] && cd $argv[1] && make $lib && cd test && make $tests_file && ctest $ctest_args
 end
