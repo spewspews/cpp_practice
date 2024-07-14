@@ -10,6 +10,5 @@ add_compile_options("$<$<CONFIG:DEBUG>:-Wall;-Wextra;-fno-omit-frame-pointer;-fs
 
 add_link_options("$<$<CONFIG:DEBUG>:-fno-omit-frame-pointer;-fsanitize=address;-fsanitize=undefined;-g>")
 
-add_subdirectory(lib)
 include_directories(lib)
 add_subdirectory(test)

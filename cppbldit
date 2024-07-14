@@ -12,8 +12,4 @@ if not set -q _flag_go
   set ctest_args $ctest_args --stop-on-failure
 end
 
-if echo $argv[2] | grep tests
-  clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
-else
-  clear && clang-format -i $argv[2] && cd $argv[1] && make $lib && cd test && make $tests_file && ctest $ctest_args
-end
+clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
