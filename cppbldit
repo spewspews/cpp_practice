@@ -5,7 +5,8 @@ or return
 
 set -f lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
 set -f tests_file $lib'_tests'
-set -f test_fixture (nawk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
+set -f test_fixture \
+  (nawk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
 
 set -f ctest_args -R $test_fixture --output-on-failure
 if not set -q _flag_go
