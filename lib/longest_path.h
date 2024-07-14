@@ -24,6 +24,8 @@ class Solution {
         std::vector<Node *> child;
 
         int calcLongestDown() {
+            // The following check is only useful if this
+            // is called twice.
             if (maxPath != -1) return maxPath;
             maxPath = 1;
             if (child.empty()) return maxPath;
