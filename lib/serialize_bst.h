@@ -13,14 +13,28 @@ struct TreeNode {
 class Codec {
     std::list<TreeNode> nodes;
 
-  public:
-    void serialize(std::ostream &s, TreeNode *root) {
-        if (root == nullptr) return;
-        auto v = root->val;
+    std::pair<bool, int> readInt(std::istream &s) {
+        char c;
+        int v = 0;
+        for (decltype(sizeof(v)) i = 0; i < sizeof(v); ++i) {
+            s.get(c);
+            if (s.eof()) return {true, 0};
+            v |= ((255 & c) << (8 * i));
+        }
+        return {false, v};
+    }
+
+    void writeInt(std::ostream &s, int v) {
         for (decltype(sizeof(v)) i = 0; i < sizeof(v); ++i) {
             s.put(v);
             v >>= 8;
         }
+    }
+
+  public:
+    void serialize(std::ostream &s, TreeNode *root) {
+        if (root == nullptr) return;
+        writeInt(s, root->val);
         serialize(s, root->left);
         serialize(s, root->right);
     }
@@ -31,50 +45,16 @@ class Codec {
         return oss.str();
     }
 
-    TreeNode *deserialize(std::vector<int>::iterator begin,
-                          std::vector<int>::iterator end) {
-        if (begin == end) return nullptr;
-        auto n = newNode(*begin);
-        auto i = begin + 1;
-        for (; i < end; ++i)
-            if (*i > *begin) break;
-        n->left = deserialize(begin + 1, i);
-        n->right = deserialize(i, end);
-        return n;
-    }
-
-    TreeNode *deserializeOld(std::string data) {
-        std::istringstream ss(data);
-        std::vector<int> vals;
-        for (;;) {
-            auto [eof, i] = lex(ss);
-            if (eof) break;
-            vals.push_back(i);
-        }
-        return deserialize(vals.begin(), vals.end());
-    }
-
     TreeNode *newNode(int i) {
         nodes.emplace_back(i);
         return &nodes.back();
-    }
-
-    std::pair<bool, int> lex(std::istream &s) {
-        char c;
-        int v = 0;
-        for (decltype(sizeof(int)) i = 0; i < sizeof(int); ++i) {
-            s.get(c);
-            if (s.eof()) return {true, 0};
-            v |= ((255 & c) << (8 * i));
-        }
-        return {false, v};
     }
 
     TreeNode *deserialize(std::string data) {
         std::istringstream ss(data);
         TreeNode *root = nullptr;
         for (;;) {
-            auto [eof, i] = lex(ss);
+            auto [eof, i] = readInt(ss);
             if (eof) break;
             auto n = &root;
             for (;;) {
