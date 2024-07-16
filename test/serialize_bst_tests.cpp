@@ -28,17 +28,17 @@ TEST_F(SerializeBSTTests, Deserialize) {
 
 TEST_F(SerializeBSTTests, FirstExample) {
     std::vector<TreeNode> nodes;
-    for (auto i : {2 + ('\xff' << 24), 1, 3, 4}) nodes.emplace_back(i);
+    for (auto i : {2 + ((0xff & '\x80') << 16), 1, 3, 4}) nodes.emplace_back(i);
     nodes[0].left = &nodes[1];
     nodes[0].right = &nodes[2];
     nodes[2].left = &nodes[3];
-    std::string s({'\x2', '\0', '\0', '\xff', '\x1', '\0', '\0', '\0', '\x3',
+    std::string s({'\x2', '\0', '\x80', '\0', '\x1', '\0', '\0', '\0', '\x3',
                    '\0', '\0', '\0', '\x4', '\0', '\0', '\0'});
     ASSERT_EQ(c.serialize(&nodes[0]), s);
 }
 
 TEST_F(SerializeBSTTests, Deserialize) {
-    std::string s({'\x2', '\0', '\0', '\xff', '\x1', '\0', '\0', '\0', '\x3',
+    std::string s({'\x2', '\0', '\x80', '\0', '\x1', '\0', '\0', '\0', '\x3',
                    '\0', '\0', '\0', '\x4', '\0', '\0', '\0'});
     auto n = c.deserialize(s);
     ASSERT_NE(n, nullptr);

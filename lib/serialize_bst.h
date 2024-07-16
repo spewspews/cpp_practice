@@ -16,10 +16,10 @@ class Codec {
   public:
     void serialize(std::ostream &s, TreeNode *root) {
         if (root == nullptr) return;
-        auto uv = reinterpret_cast<unsigned *>(&root->val);
-        for (decltype(sizeof(root->val)) i = 0; i < sizeof(root->val); ++i) {
-            s.put(0xff & *uv);
-            *uv >>= 8;
+        auto v = root->val;
+        for (decltype(sizeof(v)) i = 0; i < sizeof(v); ++i) {
+            s.put(v);
+            v >>= 8;
         }
         serialize(s, root->left);
         serialize(s, root->right);
@@ -61,15 +61,13 @@ class Codec {
 
     std::pair<bool, int> lex(std::istream &s) {
         char c;
-        int i = 0;
-        auto ui = reinterpret_cast<unsigned *>(&i);
+        int v = 0;
         for (decltype(sizeof(int)) i = 0; i < sizeof(int); ++i) {
             s.get(c);
-            auto uc = reinterpret_cast<unsigned char *>(&c);
-            *ui |= (*uc << (8 * i));
             if (s.eof()) return {true, 0};
+            v |= ((255 & c) << (8 * i));
         }
-        return {false, i};
+        return {false, v};
     }
 
     TreeNode *deserialize(std::string data) {
