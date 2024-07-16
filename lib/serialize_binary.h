@@ -15,38 +15,14 @@ struct TreeNode {
 };
 
 class Codec {
-  public:
-    void serialize(std::ostream &s, TreeNode *node) {
-        if (node == nullptr) {
-            s.put('\0');
-            return;
-        }
-        static std::vector<char> bytes(4);
-        unsigned int val = node->val;
-        int nbytes = 1;
-        for (; nbytes <= 4; ++nbytes) {
-            bytes[nbytes - 1] = val;
-            val >>= 8;
-            if (val == 0) break;
-        }
-        s.put(nbytes);
-        for (auto i = 0; i < nbytes; ++i) s.put(bytes[i]);
-        serialize(s, node->left);
-        serialize(s, node->right);
-    }
-
-    std::string serialize(TreeNode *root) {
-        std::ostringstream ss;
-        serialize(ss, root);
-        return ss.str();
-    }
+    std::vector<char> bytes;
 
     enum class Status {
         NUL,
         INT,
     };
 
-    std::pair<Status, int> lex(std::istream &s) {
+    std::pair<Status, int> readInt(std::istream &s) {
         char c;
         s.get(c);
         if (s.eof() || c == '\0') return {Status::NUL, 0};
@@ -59,8 +35,38 @@ class Codec {
         return {Status::INT, val};
     }
 
+    void writeInt(std::ostream &s, unsigned int val) {
+        int nbytes = 1;
+        for (; nbytes <= 4; ++nbytes) {
+            bytes[nbytes - 1] = val;
+            val >>= 8;
+            if (val == 0) break;
+        }
+        s.put(nbytes);
+        for (auto i = 0; i < nbytes; ++i) s.put(bytes[i]);
+    }
+
+  public:
+    Codec() : bytes(4) {}
+
+    void serialize(std::ostream &s, TreeNode *node) {
+        if (node == nullptr) {
+            s.put('\0');
+            return;
+        }
+        writeInt(s, node->val);
+        serialize(s, node->left);
+        serialize(s, node->right);
+    }
+
+    std::string serialize(TreeNode *root) {
+        std::ostringstream ss;
+        serialize(ss, root);
+        return ss.str();
+    }
+
     TreeNode *deserialize(std::istream &s) {
-        auto [status, val] = lex(s);
+        auto [status, val] = readInt(s);
         if (status == Status::NUL) return nullptr;
         auto n = new TreeNode(val);
         n->left = deserialize(s);
