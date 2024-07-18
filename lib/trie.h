@@ -1,7 +1,11 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+
+#include <ankerl/unordered_dense.h>
+
+template <class K, class V>
+using map = ankerl::unordered_dense::map<K, V>;
 
 class Trie {
     class Node {
@@ -10,7 +14,7 @@ class Trie {
         ~Node() {
             for (auto n : child) delete n.second;
         }
-        std::unordered_map<char, Node *> child;
+        map<char, Node *> child;
         bool term;
     };
     Node root;
