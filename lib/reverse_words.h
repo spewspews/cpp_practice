@@ -2,7 +2,7 @@
 
 #include <vector>
 
-class SolutionOld {
+class Solution {
   public:
     void reverseWords(std::vector<char>::iterator begin,
                       std::vector<char>::iterator end, int spaces) {
@@ -26,7 +26,7 @@ class SolutionOld {
     }
 };
 
-class Solution {
+class SolutionReverse {
   public:
     void reverseWords(std::vector<char> &s) {
         std::reverse(s.begin(), s.end());
