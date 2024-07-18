@@ -10,7 +10,7 @@ class Trie {
         ~Node() {
             for (auto n : child) delete n.second;
         }
-        std::map<char, Node *> child;
+        std::unordered_map<char, Node *> child;
         bool term;
     };
     Node root;

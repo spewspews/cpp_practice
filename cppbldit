@@ -13,8 +13,8 @@ if not set -q _flag_go
   set ctest_args $ctest_args --stop-on-failure
 end
 
-# begin
-#   clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
-# end &| less -R
+#begin
+#  clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
+#end &| less -R
 
-clear && clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
+clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args

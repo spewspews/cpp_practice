@@ -15,4 +15,6 @@ else
   set args $args build
 end
 
-find . -name '*.cpp' -or -name '*.h' | entr -dps './cppbldit '"$args"' $argv[1]'
+while sleep 0.1
+  find . -name '*.cpp' -or -name '*.h' | entr -ccdps './cppbldit '"$args"' $argv[1]'
+end
