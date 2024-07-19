@@ -1,0 +1,39 @@
+#!/usr/bin/fish
+
+argparse d/dir= g/go e/execute -- $argv
+or return
+
+if set -q _flag_execute
+  set -l lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
+  set -l tests_file $lib'_tests'
+  set -l test_fixture \
+    (nawk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
+
+  set -l ctest_args -R $test_fixture --output-on-failure
+  if not set -q _flag_go
+    set ctest_args $ctest_args --stop-on-failure
+  end
+
+  #begin
+  #  clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
+  #end &| less -R
+
+  clang-format -i $argv[2] && cd $argv[1]/test && make $tests_file && ctest $ctest_args
+  exit
+end
+
+set -f args
+
+if set -q _flag_go
+  set args $args -g
+end
+
+if set -q _flag_dir
+  set args $args $_flag_d
+else
+  set args $args build
+end
+
+while sleep 0.1
+  find . -name '*.cpp' -or -name '*.h' | entr -ccdps './eclrloop -e '"$args"' $argv[1]'
+end
