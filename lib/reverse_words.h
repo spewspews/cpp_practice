@@ -12,7 +12,7 @@ class Solution {
         for (; i < end; ++i)
             if (*i == ' ' && ++count == spaces / 2) break;
         reverseWords(begin, i + 1, spaces / 2);
-        reverseWords(i + 1, end, spaces / 2 + (spaces % 2));
+        reverseWords(i + 1, end, spaces / 2 + spaces % 2);
         std::rotate(begin, i + 1, end);
     }
 
