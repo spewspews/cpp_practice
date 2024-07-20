@@ -68,7 +68,7 @@ class Trie {
         n->term = true;
     }
 
-    void erase(char c) {
+    void prune(char c) {
         auto f = children.find(c);
         if (f == children.end()) return;
         delete f->second;
@@ -100,21 +100,21 @@ class Solution {
 
   public:
     void findWords(std::vector<std::vector<char>> &board, size_type_i i,
-                   size_type_j j, Trie *trie, std::vector<std::string> &found) {
+                   size_type_j j, Trie *trie, std::vector<std::string> &out) {
         for (auto [c, n] : trie->children) {
             if (c != board[i][j]) continue;
             if (n->term && !n->found) {
-                found.push_back(n->getWord());
+                out.push_back(n->getWord());
                 n->found = true;
             }
             auto saved = board[i][j];
             board[i][j] = '\0';
-            if (i > 0) findWords(board, i - 1, j, n, found);
-            if (j > 0) findWords(board, i, j - 1, n, found);
-            if (i < board.size() - 1) findWords(board, i + 1, j, n, found);
-            if (j < board[i].size() - 1) findWords(board, i, j + 1, n, found);
+            if (i > 0) findWords(board, i - 1, j, n, out);
+            if (j > 0) findWords(board, i, j - 1, n, out);
+            if (i < board.size() - 1) findWords(board, i + 1, j, n, out);
+            if (j < board[i].size() - 1) findWords(board, i, j + 1, n, out);
             board[i][j] = saved;
-            if (n->found && n->children.empty()) n->parent->erase(c);
+            if (n->found && n->children.empty()) n->parent->prune(c);
         }
     }
 
