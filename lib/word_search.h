@@ -24,6 +24,13 @@ class Trie {
         n->term = true;
     }
 
+    void erase(char c) {
+        auto f = children.find(c);
+        if (f == children.end()) return;
+        delete f->second;
+        children.erase(f);
+    }
+
     std::string getWord() const {
         std::string s({val});
         auto n = parent;
@@ -55,8 +62,7 @@ class Solution {
             if (n->term && !n->found) {
                 found.push_back(n->getWord());
                 if (n->children.empty()) {
-                    n->parent->children.erase(c);
-                    delete n;
+                    n->parent->erase(c);
                     continue;
                 }
                 n->found = true;
