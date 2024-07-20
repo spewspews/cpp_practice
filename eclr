@@ -35,5 +35,5 @@ else
 end
 
 while sleep 0.1
-  find . -name '*.cpp' -or -name '*.h' | entr -ccdps './eclrloop -e '"$args"' $argv[1]'
+  find . -name '*.cpp' -or -name '*.h' | entr -ccdps './eclr -e '"$args"' $argv[1]'
 end

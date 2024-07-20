@@ -33,6 +33,13 @@ TEST_F(WordSearchTests, Failure) {
                 WhenSorted(UnorderedElementsAre("oa", "oaa")));
 }
 
+TEST_F(WordSearchTests, EasyFailure) {
+    std::vector<std::vector<char>> board({{'a', 'a'}});
+    std::vector<std::string> words({"aa"});
+    ASSERT_THAT(s.findWords(board, words),
+                WhenSorted(UnorderedElementsAre("aa")));
+}
+
 TEST_F(WordSearchTests, AnotherFailure) {
     std::vector<std::vector<char>> board({{'a', 'b'}, {'a', 'a'}});
     std::vector<std::string> words(

@@ -4,7 +4,86 @@
 #include <string>
 #include <vector>
 
+class Trie {
+  public:
+    Trie() : parent(nullptr), val('\0'), term(false), found(false) {}
+
+    ~Trie() {
+        for (auto [_, n] : children) delete n;
+    }
+
+    void insert(std::string s) {
+        auto n = this;
+        for (auto c : s) {
+            auto &chld = n->children[c];
+            if (chld == nullptr) chld = new Trie();
+            chld->val = c;
+            chld->parent = n;
+            n = chld;
+        }
+        n->term = true;
+    }
+
+    std::string getWord() const {
+        std::string s({val});
+        auto n = parent;
+        while (n != nullptr) {
+            s.push_back(n->val);
+            n = n->parent;
+        }
+        s.pop_back();
+        std::reverse(s.begin(), s.end());
+        return s;
+    }
+
+    std::map<char, Trie *> children;
+    Trie *parent;
+    char val;
+    bool term;
+    bool found;
+};
+
 class Solution {
+    using size_type_i = std::vector<std::vector<char>>::size_type;
+    using size_type_j = std::vector<char>::size_type;
+
+  public:
+    void findWords(std::vector<std::vector<char>> &board, size_type_i i,
+                   size_type_j j, Trie *trie, std::vector<std::string> &found) {
+        for (auto [c, n] : trie->children) {
+            if (c != board[i][j]) continue;
+            if (n->term && !n->found) {
+                found.push_back(n->getWord());
+                if (n->children.empty()) {
+                    n->parent->children.erase(c);
+                    delete n;
+                    continue;
+                }
+                n->found = true;
+            }
+            auto saved = board[i][j];
+            board[i][j] = '\0';
+            if (i > 0) findWords(board, i - 1, j, n, found);
+            if (j > 0) findWords(board, i, j - 1, n, found);
+            if (i < board.size() - 1) findWords(board, i + 1, j, n, found);
+            if (j < board[i].size() - 1) findWords(board, i, j + 1, n, found);
+            board[i][j] = saved;
+        }
+    }
+
+    std::vector<std::string> findWords(std::vector<std::vector<char>> &board,
+                                       std::vector<std::string> &words) {
+        Trie trie;
+        for (auto w : words) trie.insert(w);
+        std::vector<std::string> found;
+        for (size_type_i i = 0; i < board.size(); ++i)
+            for (size_type_j j = 0; j < board[i].size(); ++j)
+                findWords(board, i, j, &trie, found);
+        return found;
+    };
+};
+
+class SolutionSlow {
   public:
     bool findWord(std::vector<std::vector<char>> &board,
                   decltype(board.size()) i, decltype(board[i].size()) j,
@@ -13,17 +92,15 @@ class Solution {
         if (s.size() == 1) return true;
         auto tmp = board[i][j];
         board[i][j] = '\0';
-        auto found = false;
-        if (!found && i > 0 && findWord(board, i - 1, j, s.substr(1)))
-            found = true;
-        if (!found && i < board.size() - 1 &&
-            findWord(board, i + 1, j, s.substr(1)))
-            found = true;
-        if (!found && j > 0 && findWord(board, i, j - 1, s.substr(1)))
-            found = true;
-        if (!found && j < board[i].size() - 1 &&
-            findWord(board, i, j + 1, s.substr(1)))
-            found = true;
+        auto found = [this, &i, &j, &board, &s]() {
+            if (i > 0 && findWord(board, i - 1, j, s.substr(1))) return true;
+            if (j > 0 && findWord(board, i, j - 1, s.substr(1))) return true;
+            if (i < board.size() - 1 && findWord(board, i + 1, j, s.substr(1)))
+                return true;
+            if (j < board.size() - 1 && findWord(board, i, j + 1, s.substr(1)))
+                return true;
+            return false;
+        }();
         board[i][j] = tmp;
         return found;
     }
