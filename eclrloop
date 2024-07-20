@@ -7,7 +7,7 @@ if set -q _flag_execute
   set -l lib (basename (echo $argv[2] | sed -E 's/(_tests)?\.(cpp|h)$//'))
   set -l tests_file $lib'_tests'
   set -l test_fixture \
-    (nawk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
+    (awk '/^class/ { print $2; exit }' test/$tests_file'.cpp')
 
   set -l ctest_args -R $test_fixture --output-on-failure
   if not set -q _flag_go

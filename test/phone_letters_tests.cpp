@@ -14,7 +14,7 @@ using testing::UnorderedElementsAre;
 using testing::WhenSorted;
 
 TEST_F(PhoneLetterCombinationsTests, FirstExample) {
-    ASSERT_THAT(s.letterCombinations("23"),
+    ASSERT_THAT(s.letterCombinations(std::string("23")),
                 WhenSorted(UnorderedElementsAre("ad", "ae", "af", "bd", "be",
                                                 "bf", "cd", "ce", "cf")));
 }
