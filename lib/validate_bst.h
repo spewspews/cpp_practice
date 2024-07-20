@@ -23,7 +23,7 @@ class SolutionSlow {
 
     int max(TreeNode *root) {
         if (root == nullptr)
-            throw std::runtime_error("Only call min on non nullptrs");
+            throw std::runtime_error("Only call max on non nullptrs");
         if (root->right == nullptr) return root->val;
         return min(root->right);
     }
@@ -39,16 +39,16 @@ class SolutionSlow {
 
 class Solution {
   public:
-    bool inOrder(TreeNode *root, std::optional<int> &prev) {
+    bool inOrderValidate(TreeNode *root, std::optional<int> &prev) {
         if (root == nullptr) return true;
-        if (!inOrder(root->left, prev)) return false;
+        if (!inOrderValidate(root->left, prev)) return false;
         if (prev.has_value() && root->val <= prev) return false;
         prev = root->val;
-        return inOrder(root->right, prev);
+        return inOrderValidate(root->right, prev);
     }
 
     bool isValidBST(TreeNode *root) {
         std::optional<int> prev;
-        return inOrder(root, prev);
+        return inOrderValidate(root, prev);
     }
 };
