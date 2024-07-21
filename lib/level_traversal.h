@@ -20,10 +20,8 @@ class Solution {
         std::queue<TreeNode *> q;
         q.push(root);
         for (;;) {
-
             std::queue<TreeNode *> newq;
             std::vector<int> vals;
-
             for (; !q.empty(); q.pop()) {
                 auto n = q.front();
                 if (n == nullptr) continue;
