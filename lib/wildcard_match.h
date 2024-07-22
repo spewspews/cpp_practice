@@ -43,57 +43,51 @@ class SolutionBacktrack {
 };
 
 class Solution {
-    using iter = std::string::iterator;
-    using threads_t = std::unordered_set<std::string::size_type>;
-
   public:
+    void clean(std::string &p) {
+        char prev = '\0';
+        std::erase_if(p, [&prev](char c) {
+            bool e = false;
+            if (c == '*' && prev == '*') e = true;
+            prev = c;
+            return e;
+        });
+    }
+
     bool isMatch(std::string s, std::string p) {
         if (s.empty() && p.empty()) return true;
         if (p.empty()) return false;
-        threads_t threads, next;
-        auto t = p.begin();
-        if (*t == '*') {
-            for (; t < p.end(); ++t) {
-                if (*t != '*') break;
-            }
-            --t;
-        }
-        auto add_thread = [begin = p.begin()](threads_t &threads, iter t) {
-            threads.insert(t - begin);
-        };
-        add_thread(next, t);
-        if (*t == '*') add_thread(next, t + 1);
+        clean(p);
+        std::unordered_set<char *> threads, next;
+        auto t = p.data();
+        threads.insert(t);
         for (auto c : s) {
-            std::swap(threads, next);
-            next.clear();
             if (threads.empty()) return false;
-            for (auto offset : threads) {
-                auto t = p.begin() + offset;
+            for (auto t : threads) {
                 for (;;) {
-                    if (t == p.end()) break;
+                    if (t == p.data() + p.size()) break;
                     switch (*t) {
                     default:
-                        if (*t == c) add_thread(next, t + 1);
+                        if (c == *t) next.insert(t + 1);
                         break;
                     case '?':
-                        add_thread(next, t + 1);
+                        next.insert(t + 1);
                         break;
                     case '*':
-                        for (; t < p.end(); ++t) {
-                            if (*t != '*') break;
-                        }
-                        add_thread(next, t - 1);
-                        add_thread(next, t);
+                        next.insert(t);
+                        next.insert(t + 1);
+                        ++t;
                         continue;
                     }
                     break;
                 }
             }
+            std::swap(threads, next);
+            next.clear();
         }
-        for (auto offset : next) {
-            auto t = p.begin() + offset;
-            while (t < p.end() && *t == '*') ++t;
-            if (t == p.end()) return true;
+        for (auto t : threads) {
+            while (t < p.data() + p.size() && *t == '*') ++t;
+            if (t == p.data() + p.size()) return true;
         }
         return false;
     }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <set>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 class Instr {
@@ -13,12 +13,10 @@ class Instr {
 };
 
 class Solution {
-    using iter = std::vector<Instr>::iterator;
-    using size_type = std::vector<Instr>::size_type;
-
   public:
     std::vector<Instr> parse(const std::string &p) {
         std::vector<Instr> instrs;
+        if (p.empty()) return instrs;
         for (auto i = p.begin(); i < p.end(); ++i) {
             if (i < p.end() - 1 && *(i + 1) == '*') {
                 instrs.emplace_back('*', *i);
@@ -31,16 +29,15 @@ class Solution {
     }
 
     bool isMatch(std::string s, std::string p) {
+        if (p.empty()) return true;
         auto instrs = parse(p);
-        std::set<iter> threads, next;
-        next.insert(instrs.begin());
+        std::unordered_set<Instr *> threads, next;
+        threads.insert(instrs.data());
         for (auto c : s) {
-            std::swap(threads, next);
-            next.clear();
             if (threads.empty()) return false;
             for (auto t : threads) {
                 for (;;) {
-                    if (t == instrs.end()) break;
+                    if (t == instrs.data() + instrs.size()) break;
                     switch (t->type) {
                     default:
                         if (c == t->c) next.insert(t + 1);
@@ -59,10 +56,12 @@ class Solution {
                     break;
                 }
             }
+            std::swap(threads, next);
+            next.clear();
         }
-        for (auto t : next) {
-            while (t != instrs.end() && t->type == '*') ++t;
-            if (t == instrs.end()) return true;
+        for (auto t : threads) {
+            while (t < instrs.data() + instrs.size() && t->type == '*') ++t;
+            if (t == instrs.data() + instrs.size()) return true;
         }
         return false;
     }
