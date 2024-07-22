@@ -29,7 +29,6 @@ class Solution {
     }
 
     bool isMatch(std::string s, std::string p) {
-        if (p.empty()) return true;
         auto instrs = parse(p);
         std::unordered_set<Instr *> threads, next;
         threads.insert(instrs.data());

@@ -55,8 +55,6 @@ class Solution {
     }
 
     bool isMatch(std::string s, std::string p) {
-        if (s.empty() && p.empty()) return true;
-        if (p.empty()) return false;
         clean(p);
         std::unordered_set<char *> threads, next;
         auto t = p.data();

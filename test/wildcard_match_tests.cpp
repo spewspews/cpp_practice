@@ -9,6 +9,14 @@ class WildcardMatchTests : public testing::Test {
     Solution s;
 };
 
+TEST_F(WildcardMatchTests, Empty) {
+    ASSERT_TRUE(s.isMatch(std::string(""), std::string("")));
+}
+
+TEST_F(WildcardMatchTests, AgainEmpty) {
+    ASSERT_FALSE(s.isMatch(std::string("hello"), std::string("")));
+}
+
 TEST_F(WildcardMatchTests, Weird) {
     ASSERT_TRUE(
         s.isMatch(std::string("abcabczzzde"), std::string("*abc???de*")));
