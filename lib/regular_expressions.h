@@ -6,13 +6,6 @@
 #include <unordered_set>
 #include <vector>
 
-class OldInstr {
-  public:
-    OldInstr(char type, char c) : type(type), c(c) {}
-    char type;
-    char c;
-};
-
 enum class InstrT {
     FORK,
     CHAR,
@@ -110,19 +103,5 @@ class Solution {
             if (t == instrs.data() + instrs.size()) return true;
         }
         return false;
-    }
-
-    std::vector<OldInstr> oldParse(const std::string &p) {
-        std::vector<OldInstr> instrs;
-        if (p.empty()) return instrs;
-        for (auto i = p.begin(); i < p.end(); ++i) {
-            if (i < p.end() - 1 && *(i + 1) == '*') {
-                instrs.emplace_back('*', *i);
-                ++i;
-                continue;
-            }
-            instrs.emplace_back(*i, *i);
-        }
-        return instrs;
     }
 };
