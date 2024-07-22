@@ -6,29 +6,30 @@
 #include <unordered_set>
 #include <vector>
 
-enum class InstrT {
-    SPLIT,
-    MATCH,
+class OldInstr {
+  public:
+    OldInstr(char type, char c) : type(type), c(c) {}
+    char type;
+    char c;
 };
 
-class NewInstr {
-  public:
-    NewInstr(InstrT type) : type(type) {}
-    InstrT type;
-    union {
-        char c;
-        struct {
-            std::size_t skip1;
-            std::size_t skip2;
-        };
-    };
+enum class InstrT {
+    FORK,
+    CHAR,
+    DOT,
 };
 
 class Instr {
   public:
-    Instr(char type, char c) : type(type), c(c) {}
-    char type;
-    char c;
+    Instr(InstrT type) : type(type) {}
+    InstrT type;
+    union {
+        char c;
+        struct {
+            int skip1;
+            int skip2;
+        };
+    };
 };
 
 template <class V>
@@ -48,34 +49,31 @@ class UniqueList {
 
 class Solution {
   public:
-    std::vector<NewInstr> newParse(const std::string &p) {
-        std::vector<NewInstr> instrs;
-        if (p.empty()) return instrs;
-        for (auto i = p.begin(); i < p.end(); ++i) {
-            if (i < p.end() - 1 && *(i + 1) == '*') {
-                instrs.emplace_back(InstrT::SPLIT);
-                instrs.back().skip1 = 0;
-                instrs.back().skip2 = 1;
-                instrs.emplace_back(InstrT::MATCH);
-                instrs.back().c = *i;
-                ++i;
-                continue;
-            }
-            instrs.emplace_back(InstrT::MATCH);
-            instrs.back().c = *i;
-        }
-        return instrs;
-    }
     std::vector<Instr> parse(const std::string &p) {
         std::vector<Instr> instrs;
         if (p.empty()) return instrs;
         for (auto i = p.begin(); i < p.end(); ++i) {
             if (i < p.end() - 1 && *(i + 1) == '*') {
-                instrs.emplace_back('*', *i);
+                instrs.emplace_back(InstrT::FORK);
+                instrs.back().skip1 = 1;
+                instrs.back().skip2 = 3;
+                if (*i == '.') instrs.emplace_back(InstrT::DOT);
+                else {
+                    instrs.emplace_back(InstrT::CHAR);
+                    instrs.back().c = *i;
+                }
+                instrs.emplace_back(InstrT::FORK);
+                instrs.back().skip1 = -1;
+                instrs.back().skip2 = 1;
                 ++i;
                 continue;
             }
-            instrs.emplace_back(*i, *i);
+            if (*i == '.') {
+                instrs.emplace_back(InstrT::DOT);
+                continue;
+            }
+            instrs.emplace_back(InstrT::CHAR);
+            instrs.back().c = *i;
         }
         return instrs;
     }
@@ -91,18 +89,15 @@ class Solution {
                 auto t = *ti;
                 if (t == instrs.data() + instrs.size()) continue;
                 switch (t->type) {
-                default:
+                case InstrT::CHAR:
                     if (c == t->c) next.add(t + 1);
                     break;
-                case '.':
+                case InstrT::DOT:
                     next.add(t + 1);
                     break;
-                case '*':
-                    if (t->c == '.' || c == t->c) {
-                        next.add(t);
-                        next.add(t + 1);
-                    }
-                    threads.add(std::next(ti), t + 1);
+                case InstrT::FORK:
+                    threads.add(std::next(ti), t + t->skip1);
+                    threads.add(std::next(ti), t + t->skip2);
                     break;
                 }
             }
@@ -110,11 +105,24 @@ class Solution {
             next.clear();
         }
         for (auto t : threads.list) {
-            if (t < instrs.data() + instrs.size())
-                std::cout << " t=" << t->type << ',' << t->c << std::endl;
-            while (t < instrs.data() + instrs.size() && t->type == '*') ++t;
+            while (t < instrs.data() + instrs.size() && t->type == InstrT::FORK)
+                t = t + t->skip2;
             if (t == instrs.data() + instrs.size()) return true;
         }
         return false;
+    }
+
+    std::vector<OldInstr> oldParse(const std::string &p) {
+        std::vector<OldInstr> instrs;
+        if (p.empty()) return instrs;
+        for (auto i = p.begin(); i < p.end(); ++i) {
+            if (i < p.end() - 1 && *(i + 1) == '*') {
+                instrs.emplace_back('*', *i);
+                ++i;
+                continue;
+            }
+            instrs.emplace_back(*i, *i);
+        }
+        return instrs;
     }
 };
