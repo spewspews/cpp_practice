@@ -80,7 +80,7 @@ class Solution {
                     break;
                 }
             }
-            std::swap(threads, next);
+            threads = std::move(next);
             next.clear();
         }
         for (auto t : threads) {
