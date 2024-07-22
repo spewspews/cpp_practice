@@ -14,3 +14,7 @@ TEST_F(RegularExpressionTests, FirstExample) { ASSERT_TRUE(s.isMatch("", "")); }
 TEST_F(RegularExpressionTests, SecondExample) {
     ASSERT_FALSE(s.isMatch("hello", ""));
 }
+
+TEST_F(RegularExpressionTests, Failing) {
+    ASSERT_TRUE(s.isMatch("aaa", "ab*a*c*a"));
+}
