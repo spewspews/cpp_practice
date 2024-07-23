@@ -41,9 +41,7 @@ template <class V>
 class UniqueList {
   public:
     using iterator = std::list<V>::iterator;
-    std::unordered_set<V> added;
-    std::list<V> list;
-    void add(V i) {
+    void push_back(V i) {
         if (added.contains(i)) return;
         added.insert(i);
         list.push_back(i);
@@ -52,11 +50,15 @@ class UniqueList {
     bool empty() { return list.empty(); }
     iterator begin() { return list.begin(); }
     iterator end() { return list.end(); }
+
+  private:
+    std::unordered_set<V> added;
+    std::list<V> list;
 };
 
 class Solution {
   public:
-    char *parse(char *c, char *end, std::vector<Instr> &instrs) {
+    char *parse(char *c, const char *end, std::vector<Instr> &instrs) {
         auto prev = 0;
         for (; c < end; ++c) {
             switch (*c) {
@@ -106,27 +108,28 @@ class Solution {
         return c;
     }
 
+    auto end(const auto &c) { return c.data() + c.size(); }
+
     bool isMatch(std::string s, std::string p) {
         std::vector<Instr> instrs;
-        auto c = parse(p.data(), p.data() + p.size(), instrs);
-        if (c != p.data() + p.size())
-            throw std::runtime_error("Could not parse");
+        auto c = parse(p.data(), end(p), instrs);
+        if (c != end(p)) throw std::runtime_error("Could not parse");
         UniqueList<Instr *> threads, next;
-        threads.add(instrs.data());
+        threads.push_back(instrs.data());
         for (auto c : s) {
             if (threads.empty()) return false;
             for (auto t : threads) {
-                if (t == instrs.data() + instrs.size()) continue;
+                if (t == end(instrs)) continue;
                 switch (t->type) {
                 case InstrT::CHAR:
-                    if (c == t->c) next.add(t + 1);
+                    if (c == t->c) next.push_back(t + 1);
                     break;
                 case InstrT::DOT:
-                    next.add(t + 1);
+                    next.push_back(t + 1);
                     break;
                 case InstrT::FORK:
-                    threads.add(t + t->off1);
-                    threads.add(t + t->off2);
+                    threads.push_back(t + t->off1);
+                    threads.push_back(t + t->off2);
                     break;
                 }
             }
@@ -134,9 +137,8 @@ class Solution {
             next.clear();
         }
         for (auto t : threads) {
-            while (t < instrs.data() + instrs.size() && t->type == InstrT::FORK)
-                t = t + t->off2;
-            if (t == instrs.data() + instrs.size()) return true;
+            while (t < end(instrs) && t->type == InstrT::FORK) t = t + t->off2;
+            if (t == end(instrs)) return true;
         }
         return false;
     }
