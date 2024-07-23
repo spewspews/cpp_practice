@@ -40,3 +40,43 @@ TEST_F(RegularExpressionTests, DotStar) {
 TEST_F(RegularExpressionTests, DotStarAgain) {
     ASSERT_FALSE(s.isMatch("abdka;lkjefc", "a.*d"));
 }
+
+TEST_F(RegularExpressionTests, Group) {
+    ASSERT_TRUE(s.isMatch("abcabcd", "(abc)*d"));
+}
+
+TEST_F(RegularExpressionTests, GroupNoMatch) {
+    ASSERT_FALSE(s.isMatch("abcabcd", "abc*d"));
+}
+
+TEST_F(RegularExpressionTests, GroupPlus) {
+    ASSERT_TRUE(s.isMatch("abcabcd", "(abc)+d"));
+}
+
+TEST_F(RegularExpressionTests, GroupPlusNoMatch) {
+    ASSERT_FALSE(s.isMatch("d", "(abc)+d"));
+}
+
+TEST_F(RegularExpressionTests, GroupStarMatch) {
+    ASSERT_TRUE(s.isMatch("d", "(abc)*d"));
+}
+
+TEST_F(RegularExpressionTests, QuestionMatch) {
+    ASSERT_TRUE(s.isMatch("d", "(abc)?d"));
+}
+
+TEST_F(RegularExpressionTests, QuestionMatchAgain) {
+    ASSERT_TRUE(s.isMatch("abcd", "(abc)?d"));
+}
+
+TEST_F(RegularExpressionTests, QuestionNoMatch) {
+    ASSERT_FALSE(s.isMatch("abcabcd", "(abc)?d"));
+}
+
+TEST_F(RegularExpressionTests, QuestionMatchAtEnd) {
+    ASSERT_TRUE(s.isMatch("abc", "abcd?"));
+}
+
+TEST_F(RegularExpressionTests, EmptyExpression) {
+    ASSERT_FALSE(s.isMatch("abc", ""));
+}
