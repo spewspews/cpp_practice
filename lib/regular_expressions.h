@@ -62,16 +62,18 @@ class Solution {
         auto prev = 0;
         for (; c < end; ++c) {
             switch (*c) {
-            default:
-                instrs.emplace_back(InstrT::CHAR);
-                instrs.back().c = *c;
+            default: {
+                auto i = instrs.emplace(instrs.end(), InstrT::CHAR);
+                i->c = *c;
                 prev = 1;
                 break;
+            }
             case '(': {
                 auto prevSize = instrs.size();
                 c = parse(c + 1, end, instrs);
+                if (*c != ')')
+                    throw std::runtime_error("Parse error: expected ')'");
                 prev = instrs.size() - prevSize;
-                if (*c != ')') throw std::runtime_error("Expected ')'");
                 break;
             }
             case ')':
@@ -93,12 +95,13 @@ class Solution {
                 prev = prev + 1;
                 break;
             }
-            case '+':
-                instrs.emplace_back(InstrT::FORK);
-                instrs.back().off1 = -prev;
-                instrs.back().off2 = 1;
+            case '+': {
+                auto i = instrs.emplace(instrs.end(), InstrT::FORK);
+                i->off1 = -prev;
+                i->off2 = 1;
                 prev = prev + 1;
                 break;
+            }
             case '.':
                 instrs.emplace_back(InstrT::DOT);
                 prev = 1;
